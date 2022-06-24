@@ -6,7 +6,7 @@ public class CitiesDataStore
 {
     public List<CityDto> Cities { get; set; }
     // singleton pattern
-    public static CitiesDataStore Current { get; } = new CitiesDataStore();
+    // public static CitiesDataStore Current { get; } = new CitiesDataStore();
 
 
         // init dummy data

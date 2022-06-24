@@ -8,20 +8,26 @@ namespace CityInfo.Api.Controllers;
 // [Route("api/{controller}")] -- this would use the classname without the controller part -- cities
 public class CitiesController : ControllerBase
 {
+    private readonly CitiesDataStore _citiesDataStore;
+
+    public CitiesController(CitiesDataStore citiesDataStore )
+    {
+        _citiesDataStore = citiesDataStore;
+    }
     // [HttpGet("api/cities")]
     [HttpGet]
     public IActionResult GetCities()
     {
-        return Ok(CitiesDataStore.Current.Cities);
+        return Ok(_citiesDataStore.Cities);
     }
 
     [HttpGet("{id}")]
     public ActionResult<CityDto> GetCity(int id)
     {
-        var CityToReturn = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
+        var cityToReturn = _citiesDataStore.Cities.FirstOrDefault(c => c.Id == id);
 
-        if (CityToReturn == null) return NotFound();
-        return Ok(CityToReturn);
-            // return new JsonResult(CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id));
+        if (cityToReturn == null) return NotFound();
+        return Ok(cityToReturn);
+            // return new JsonResult(_citiesDataStore.Cities.FirstOrDefault(c => c.Id == id));
     }
 }
