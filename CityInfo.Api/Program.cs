@@ -57,6 +57,10 @@ builder.Services.AddDbContext<CityInfoContext>(dbContextOptions =>
 // Register our repository
 builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
+// This is frm the nuget package AutoMapper.Extensions.Microsoft.DependencyInjection
+// AppDomain.CurrentDomain.GetAssemblies() Means that the current assembly CityInfo.Api will be scanned for profiles
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
