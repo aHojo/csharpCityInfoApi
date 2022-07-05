@@ -9,5 +9,6 @@ public class CityProfile : Profile
         // Maps property names on the source object to properties on the destination
         // Ignores NullReferenceExceptions types (If the prop doesn't exist, it will be ignored)
         CreateMap<Entities.City, Models.CityWithoutPointsOfInterestDto>();
+        CreateMap<Entities.City, Models.CityDto>();
     }
 }

@@ -36,4 +36,26 @@ we are using Serilog to log to a file
 `Serilog.AspNetCore`  
 **_sinks are how we log to certain places_**  
 `serilog.sinks.console`  
-`serilog.sinks.file`  
+`serilog.sinks.file` 
+
+## Deferred Exection to the database
+Construct the query, then execute it
+
+Only executed when the query is ** **iterated** ** over
+ - loop
+ - to list
+ - to array
+ - to dictionary
+ - singleton querys - average, count, first etc. 
+
+A query variable stores the query commands, not the results
+- `IQueryable<T>`: creates an expression Tree
+
+## Returning paging metadata
+### envelope 
+```
+{
+"results": [{obj}, {obj}, ...],
+"metadata": {"previousPage": "/api/...", pageSize, pageNumber, nextpage...}
+}
+```

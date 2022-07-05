@@ -15,7 +15,37 @@ public class CityInfoRepository : ICityInfoRepository
     }
     public async Task<IEnumerable<City>> GetCitiesAsync()
     {
-        return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
+        return await _context.Cities.OrderBy(c => c.Name)
+            .ToListAsync();
+    }
+    
+    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
+    {
+        // where to start our query
+        var collection = _context.Cities as IQueryable<City>;
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            name = name.Trim();
+            collection = collection.Where(c => c.Name == name);
+        }
+        
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            searchQuery = searchQuery.Trim();
+            collection = collection.Where(a => a.Name.Contains(searchQuery) || (a.Description != null && a.Description.Contains(searchQuery)));
+        }
+
+        return await collection
+            .OrderBy(c => c.Name)
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .ToListAsync();
+        // return await _context.Cities
+        //     .Where(c => c.Name == name)
+        //     .OrderBy(c => c.Name)
+        //     .ToListAsync();
+        // return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
     }
 
     public async Task<City?> GetCityAsync(int cityId, bool includePointsOfInterest)
@@ -29,6 +59,10 @@ public class CityInfoRepository : ICityInfoRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<bool> CityExistsAsync(int cityId)
+    {
+        return await _context.Cities.AnyAsync(c => c.Id == cityId);
+    }
     public async Task<IEnumerable<PointOfInterest>> GetPointsOfInterestForCityAsync(int cityId)
     {
         return await _context.PointsOfInterest.Where(p => p.CityId == cityId).ToListAsync();
@@ -38,5 +72,25 @@ public class CityInfoRepository : ICityInfoRepository
     {
         return await _context.PointsOfInterest.Where(p => p.CityId == cityId && p.Id == pointOfInterestId)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task AddPointOfInterestForCityAsync(int cityId, PointOfInterest pointOfInterest) 
+    {
+        var city = await GetCityAsync(cityId, false);
+        if (city != null)
+        {
+            // This doesn't make a call to the db, just adds to the object in memory
+            city.PointsOfInterest.Add(pointOfInterest);
+        }
+    }
+
+    public void DeletePointOfInterest(PointOfInterest pointOfInterest)
+    {
+        // in memory action, need to save the changes after
+        _context.PointsOfInterest.Remove(pointOfInterest);
+    }
+    public async Task<bool> SaveChangesAsync()
+    {
+        return (await _context.SaveChangesAsync() >= 0);
     }
 }
