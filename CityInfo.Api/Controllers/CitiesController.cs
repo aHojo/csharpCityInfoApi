@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CityInfo.Api.Models;
 using CityInfo.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -8,13 +9,14 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace CityInfo.Api.Controllers;
 
 [ApiController]
+[Authorize] // whole controller needs this. 
 [Route("api/cities")]
 // [Route("api/{controller}")] -- this would use the classname without the controller part -- cities
 public class CitiesController : ControllerBase
 {
     private readonly ICityInfoRepository _cityInfoRepository;
     private readonly IMapper _mapper; // automapper
-    private const int maxCitiesPageSize = 20;
+    private const int MaxCitiesPageSize = 20;
 
     // Inject repository contract
     public CitiesController(ICityInfoRepository  cityInfoRepository, IMapper mapper)
@@ -29,9 +31,9 @@ public class CitiesController : ControllerBase
         int pageNumber = 1, int pageSize = 10)
     {
         // can't go over the max page size here. 
-        if (pageSize > maxCitiesPageSize)
+        if (pageSize > MaxCitiesPageSize)
         {
-            pageSize = maxCitiesPageSize;
+            pageSize = MaxCitiesPageSize;
         }
         // returns a tuple so unpack it. 
         var (cityEntities, paginationMetadata) = await _cityInfoRepository.GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
