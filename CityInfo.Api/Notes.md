@@ -59,3 +59,32 @@ A query variable stores the query commands, not the results
 "metadata": {"previousPage": "/api/...", pageSize, pageNumber, nextpage...}
 }
 ```
+
+### Use a location header
+Location - url to next page
+
+### 
+Send envelope in a header
+```bash
+"X-Pagination": {"TotalItemCount":3,"TotalPageCount":3,"PageSize":1,"CurrentPage":2}
+
+```
+#  Securing an API
+## Token Based Security
+Only have to login with user/pass once
+
+- Send a token on each request
+- A token represents consent
+- Validate token at the level of API
+
+### Implementation
+Create A token - `login` endpoint for user/pass
+Token is in response
+
+JWT
+token 3 things - payload, signature, header
+
+- Create /api/login endpoint
+- Encure the api can only be accessed with a valid token.
+- pass the token from the client to the API as a bearer token on each request
+    `Authorization: Bearer <Token>`
