@@ -19,7 +19,8 @@ public class CityInfoRepository : ICityInfoRepository
             .ToListAsync();
     }
     
-    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
+    // Return a Tuple for pagination metadata.
+    public async Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
     {
         // where to start our query
         var collection = _context.Cities as IQueryable<City>;
@@ -36,11 +37,15 @@ public class CityInfoRepository : ICityInfoRepository
             collection = collection.Where(a => a.Name.Contains(searchQuery) || (a.Description != null && a.Description.Contains(searchQuery)));
         }
 
-        return await collection
+        // Makes a DB call here
+        var totalItemCount = await collection.CountAsync();
+        var paginationMetadata = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
+        var collectionToReturn =  await collection
             .OrderBy(c => c.Name)
             .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
             .ToListAsync();
+        return (collectionToReturn, paginationMetadata);
         // return await _context.Cities
         //     .Where(c => c.Name == name)
         //     .OrderBy(c => c.Name)
